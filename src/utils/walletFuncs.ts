@@ -1,6 +1,6 @@
 import { secp256k1 } from "ethereum-cryptography/secp256k1";
 import { keccak256 } from "ethereum-cryptography/keccak";
-import { utf8ToBytes } from "ethereum-cryptography/utils";
+import { bytesToHex, utf8ToBytes } from "ethereum-cryptography/utils";
 
 export type Accounts = {
   [key in Username]: {
@@ -47,15 +47,10 @@ export const findUserWhoSigned = (
   msgHash: Uint8Array,
   username: Username
 ): Username | null => {
-  // sign message again, since cannot move around with that weird type
+  // sign message again, since cannot move around that weird type
   const privateKey = getPrivateKey(username);
   const signed = secp256k1.sign(msgHash, privateKey);
   const publicKeyElipticCoords = signed.recoverPublicKey(msgHash);
-
-  // console.log(
-  //   "need to know how this thing looks",
-  //   publicKeyElipticCoords.toHex()
-  // );
 
   const publicKey = publicKeyElipticCoords.toHex();
   // ---- find the user whos public key was derived from the signed tx
@@ -77,19 +72,32 @@ export const findUserWhoSigned = (
 export type Tx = { sender: Username; recipient: string; amount: number };
 
 export const runCompleteExample = (sender: Username = "alice") => {
-  const tx = { sender, amount: 7, recipeint: "bob" }; //send
-  const txHash = keccak256(utf8ToBytes(JSON.stringify(tx))); //send
-  const signedTxHash = secp256k1.sign(txHash, ACCOUNTS[sender].private); //send
+  // const dataToSend = {
+  //   tx: { sender: "", amount: 0, recipient: "" },
+  //   txHash: "",
+  //   signedHashHex: "",
+  // };
 
-  // backend
+  const tx = { sender, amount: 7, recipient: "bob" };
+  // dataToSend.tx = tx;
+  const txHash = keccak256(utf8ToBytes(JSON.stringify(tx)));
+  // dataToSend.txHash = bytesToHex(txHash);
+  const signedTxHash = secp256k1.sign(txHash, ACCOUNTS[sender].private);
+  // dataToSend.signedHashHex = signedTxHash.toCompactHex()
+
   const publicKey = signedTxHash.recoverPublicKey(txHash).toHex(); // derived public key from tx & signed tx
-  const isValid = secp256k1.verify(signedTxHash, txHash, publicKey); // verify tx is valid
 
+  const isValid = secp256k1.verify(
+    signedTxHash.toCompactHex(),
+    bytesToHex(txHash),
+    ACCOUNTS[sender].public
+  ); // verify tx is valid
+
+  // backend sending publicKey of validated tx alongside the tx itself
+  // NEED: publicKey derived from signedTx - senderPublicKey
   // todo: find a way to recover the tx from the hashedTx
   // trick to find the user since cannot recover the hashed tx as of now
-  const userWhoSigned = findUserWhoSigned(txHash, sender);
-  const canContinueWithTx = sender === userWhoSigned;
+  const samePublicKey = publicKey === ACCOUNTS[sender].public;
 
-  console.log("isValidSignature", isValid);
-  console.log("userWhoSigned", userWhoSigned, canContinueWithTx);
+  console.log("isValidSignature & Tx", isValid, samePublicKey);
 };
