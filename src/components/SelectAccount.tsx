@@ -22,7 +22,7 @@ const PUBLIC_KEYS = [
   bytesToHex(secp256k1.getPublicKey(PRIVATE_KEYS[3])),
 ];
 
-export default function SelectKeys(props: Props) {
+export default function SelectAccount(props: Props) {
   const { updateKeys, currPrivate } = props;
 
   const selectHandler = (e: ChangeEvent<HTMLSelectElement>) => {

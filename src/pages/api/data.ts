@@ -12,19 +12,16 @@ const balances: { [key: string]: number } = {
   "0x3": 75,
 };
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "POST":
       const { sender, recipient, amount } = req.body;
       const success = handlePost(sender, recipient, amount);
       const dataToSend = success
         ? {
-          sender: balances[sender as string],
-          recipient: balances[recipient as string],
-        }
+            sender: balances[sender as string],
+            recipient: balances[recipient as string],
+          }
         : { err: "sender has not enough money or missing data" };
       return res.send(dataToSend);
 
@@ -54,3 +51,4 @@ function handlePost(sender: any, recipient: any, amount: any): boolean {
   else balances[recipient] = +amount;
   return true;
 }
+export default handler;

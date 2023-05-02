@@ -1,6 +1,7 @@
 # Project desc
+
 - Select a pk & generate a publicKey value
-- Sign the message with the pk, i the server verify that the message has a correct signature made with the correct publicKey  
+- Sign the message with the pk, i the server verify that the message has a correct signature made with the correct publicKey
   - Do the transaction
 - what if somehow can send the timestamp alongside the signed message then I can get the signature in the sere thus avoid some double spending or account draining?
 
@@ -13,6 +14,18 @@
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Todo
+
+```tsx
+// * cannot pass round signedMsg so need to sign it again, there may be a better solution...
+export const verifySignature = (msgHash: Uint8Array, username: Username) => {
+  const signedMsg = secp256k1.sign(msgHash, ACCOUNTS[SENDER].private);
+  const publicKey = ACCOUNTS[username].public;
+  const isValid = secp256k1.verify(signedMsg, msgHash, publicKey);
+
+  return isValid;
+};
+```
 
 ## Getting Started
 
