@@ -1,7 +1,8 @@
-import { KeyPairs } from "@/pages";
 import { secp256k1 } from "ethereum-cryptography/secp256k1";
 import { bytesToHex, utf8ToBytes } from "ethereum-cryptography/utils";
 import { ChangeEvent } from "react";
+
+type KeyPairs = { public: string; private: string };
 
 type Props = {
   updateKeys: (updatedKeys: KeyPairs) => void;
@@ -24,6 +25,7 @@ const PUBLIC_KEYS = [
 
 export default function SelectAccount(props: Props) {
   const { updateKeys, currPrivate } = props;
+  console.log(PRIVATE_KEYS[0], PUBLIC_KEYS[0]);
 
   const selectHandler = (e: ChangeEvent<HTMLSelectElement>) => {
     const index = +e.target.value || 0;
@@ -45,9 +47,10 @@ export default function SelectAccount(props: Props) {
         ))}
       </select>
       <p>
-        0x{`${currPrivate.slice(0, 5)} ... ${
-          currPrivate.slice(currPrivate.length - 7)
-        }`}
+        0x
+        {`${currPrivate.slice(0, 5)} ... ${currPrivate.slice(
+          currPrivate.length - 7
+        )}`}
       </p>
     </div>
   );

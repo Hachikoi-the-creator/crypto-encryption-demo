@@ -72,28 +72,33 @@ export const findUserWhoSigned = (
 export type Tx = { sender: Username; recipient: string; amount: number };
 
 export const runCompleteExample = (sender: Username = "alice") => {
-  // const dataToSend = {
-  //   tx: { sender: "", amount: 0, recipient: "" },
-  //   txHash: "",
-  //   signedHashHex: "",
-  // };
+  const dataToSend = {
+    tx: { sender: "", amount: 0, recipient: "" },
+    signedHashHex: "",
+    txHash: "",
+    publickKey: "",
+  };
 
   const tx = { sender, amount: 7, recipient: "bob" };
   // dataToSend.tx = tx;
   const txHash = keccak256(utf8ToBytes(JSON.stringify(tx)));
   // dataToSend.txHash = bytesToHex(txHash);
-  const signedTxHash = secp256k1.sign(txHash, ACCOUNTS[sender].private);
+  const signedTxHash = secp256k1.sign(txHash, "ACCOUNTS[sender].private");
   // dataToSend.signedHashHex = signedTxHash.toCompactHex()
 
   const publicKey = signedTxHash.recoverPublicKey(txHash).toHex(); // derived public key from tx & signed tx
 
-  const isValid = secp256k1.verify(
-    signedTxHash.toCompactHex(),
-    bytesToHex(txHash),
-    ACCOUNTS[sender].public
-  ); // verify tx is valid
+  dataToSend.signedHashHex = signedTxHash.toCompactHex();
+  dataToSend.txHash = bytesToHex(txHash);
+  dataToSend.publickKey = ACCOUNTS[sender].public;
 
   // backend sending publicKey of validated tx alongside the tx itself
+  const isValid = secp256k1.verify(
+    dataToSend.signedHashHex,
+    dataToSend.txHash,
+    dataToSend.publickKey
+  ); // verify tx is valid
+
   // NEED: publicKey derived from signedTx - senderPublicKey
   // todo: find a way to recover the tx from the hashedTx
   // trick to find the user since cannot recover the hashed tx as of now
