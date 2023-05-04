@@ -6,11 +6,12 @@ import { utf8ToBytes } from "ethereum-cryptography/utils";
 import { useRef } from "react";
 
 type Props = {
-  userKeys: { privateKey: string; publicKey: string };
+  privateKey: string;
+  publicKey: string;
+  username: string;
 };
 
-function TxForm({ userKeys }: Props) {
-  const { privateKey, publicKey } = userKeys;
+export default function TxForm({ username, privateKey, publicKey }: Props) {
   const senderRef = useRef<HTMLInputElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
   const recipiendRef = useRef<HTMLInputElement>(null);
@@ -58,5 +59,3 @@ function TxForm({ userKeys }: Props) {
     </form>
   );
 }
-
-export default TxForm;

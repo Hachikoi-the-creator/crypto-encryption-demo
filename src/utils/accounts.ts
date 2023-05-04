@@ -1,43 +1,93 @@
-import { secp256k1 } from "ethereum-cryptography/secp256k1";
-import { bytesToHex } from "ethereum-cryptography/utils";
+// ? chat gipiti did this transormation so no trust it too much
+export type Username = "jhon" | "alice" | "eve" | "chris" | "anabelle";
 
-const PRIVATE_KEYS = [
-  "089eadc5aaa8a3e309b6cf07c871478af3a1969a27c01c81ec04758635c497c5",
-  "b9ef2bdf070740f4bc331692b7e0689b3e4e0e678ae3c174f7a18850b8a21590",
-  "f93b5cae32779e53286b625c3f364a499f93a4f3b15a315634b83d7ed2485960",
-  "29959c8e7483383454f713ad4e19c46a4627b58b0b5d7d8b628f4643a1963dd9",
-];
-
-const PUBLIC_KEYS = [
-  bytesToHex(secp256k1.getPublicKey(PRIVATE_KEYS[0])),
-  bytesToHex(secp256k1.getPublicKey(PRIVATE_KEYS[1])),
-  bytesToHex(secp256k1.getPublicKey(PRIVATE_KEYS[2])),
-  bytesToHex(secp256k1.getPublicKey(PRIVATE_KEYS[3])),
-];
-
-// export const mapping = Array(5)
-//   .fill(0)
-//   .map((e) => {
-//     const privateKey = secp256k1.utils.randomPrivateKey();
-//     const publicKey = secp256k1.getPublicKey(privateKey);
-//     return { dickson: { publicKey, privateKey } };
-//   });
-
-export default {
-  alice: {
-    public: PUBLIC_KEYS[0],
-    private: PRIVATE_KEYS[0],
-  },
-  jhon: {
-    public: PUBLIC_KEYS[1],
-    private: PRIVATE_KEYS[1],
-  },
-  eve: {
-    public: PUBLIC_KEYS[2],
-    private: PRIVATE_KEYS[2],
-  },
-  chris: {
-    public: PUBLIC_KEYS[3],
-    private: PRIVATE_KEYS[3],
-  },
+export type Account = {
+  name: Username;
+  publicKey: string;
+  privateKey: string;
 };
+
+export const accountsArray: Account[] = [
+  {
+    name: "alice",
+    publicKey:
+      "030dd4bdeb9e7e6f4e62678ec9c57db844df872db1581f9e739fc01f8b105b15e5",
+    privateKey:
+      "64c15bd6c37f43ce818aced3c76699405047631e55ddae3eea5afa490872b7bc",
+  },
+  {
+    name: "jhon",
+    publicKey:
+      "020f30cf0c0d624ce8c07cbac2e651adf23145ac1d959ef6192cb26b9516c6fe19",
+    privateKey:
+      "51450f3f620fdfc0ac6d000130ca8fd23563626f7f3c747ab76519c3f019addb",
+  },
+  {
+    name: "eve",
+    publicKey:
+      "02d9e90735ebb069e7da9ee4d9abf2e98b239ce3ea1fc6bd031a0c27b5a92fb01a",
+    privateKey:
+      "0a4f1687d420a942f42ab9a7230bf6ff63ba2e45bd0b666f7b62d386524affc1",
+  },
+  {
+    name: "chris",
+    publicKey:
+      "03ac782f126633ccb25cb3d2e864949cbbad76c7ef7529e4523befb9ce6be7390d",
+    privateKey:
+      "78e8f83ff2f082c76f7d64389e61bd1e0751a454d6930d6835c3d465123d9099",
+  },
+  {
+    name: "anabelle",
+    publicKey:
+      "0309a29ef7ef4f62433197863ff1dc3b4ff0956d7cf6b611e402a0dc214f788d25",
+    privateKey:
+      "ea52c0ff3f428fcb02f0c2a16ecbce78fc91ca26da57e96f3682ca85cab5bcea",
+  },
+];
+
+// if not founc return acc 0
+export function findByName(name: Username) {
+  const account = accountsArray.find((acc) => acc.name === name);
+  return account || { noacc: { privateKey: 0, publicKey: 0 } };
+}
+
+// export type Account = {
+//   privateKey: string;
+//   publicKey: string;
+// };
+
+// export type Accounts = {
+//   [key in Username]: Account;
+// };
+// export const accountsList: Accounts = {
+//   alice: {
+//     privateKey:
+//       "64c15bd6c37f43ce818aced3c76699405047631e55ddae3eea5afa490872b7bc",
+//     publicKey:
+//       "030dd4bdeb9e7e6f4e62678ec9c57db844df872db1581f9e739fc01f8b105b15e5",
+//   },
+//   jhon: {
+//     privateKey:
+//       "51450f3f620fdfc0ac6d000130ca8fd23563626f7f3c747ab76519c3f019addb",
+//     publicKey:
+//       "020f30cf0c0d624ce8c07cbac2e651adf23145ac1d959ef6192cb26b9516c6fe19",
+//   },
+//   eve: {
+//     privateKey:
+//       "0a4f1687d420a942f42ab9a7230bf6ff63ba2e45bd0b666f7b62d386524affc1",
+//     publicKey:
+//       "02d9e90735ebb069e7da9ee4d9abf2e98b239ce3ea1fc6bd031a0c27b5a92fb01a",
+//   },
+//   chris: {
+//     privateKey:
+//       "78e8f83ff2f082c76f7d64389e61bd1e0751a454d6930d6835c3d465123d9099",
+//     publicKey:
+//       "03ac782f126633ccb25cb3d2e864949cbbad76c7ef7529e4523befb9ce6be7390d",
+//   },
+//   anabelle: {
+//     privateKey:
+//       "ea52c0ff3f428fcb02f0c2a16ecbce78fc91ca26da57e96f3682ca85cab5bcea",
+//     publicKey:
+//       "0309a29ef7ef4f62433197863ff1dc3b4ff0956d7cf6b611e402a0dc214f788d25",
+//   },
+// };
