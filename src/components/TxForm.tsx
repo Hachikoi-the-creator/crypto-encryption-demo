@@ -1,28 +1,28 @@
-import { FormEvent, useContext, useRef } from "react";
+import { ChangeEvent, FormEvent, useContext, useRef, useState } from "react";
 import axios from "axios";
 import { bytesToHex } from "@noble/curves/abstract/utils";
 import { secp256k1 } from "ethereum-cryptography/secp256k1";
 import { utf8ToBytes } from "ethereum-cryptography/utils";
 import { randomBytes } from "crypto";
 import { AccountContext } from "@/pages";
-import { accountsArray } from "@/utils/accounts";
+import { Username, accountsArray } from "@/utils/accounts";
 import SelectRecipient from "./SelectRecipient";
-import SelectAccount from "./SelectAccount";
+import SelectAccount from "./SelectSender";
 
 export default function TxForm() {
   const { account } = useContext(AccountContext);
+  const [recipient, setRecipient] = useState<Username>("eve");
   const amountRef = useRef<HTMLInputElement>(null);
-  const recipientRef = useRef<HTMLSelectElement>(null);
   // arr of names without the one that's the current sender
   const accNames = accountsArray
     .map((e) => e.name)
     .filter((e) => e !== account.name);
 
+  // * ---- tx sender ----
   const sendTx = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const amount = amountRef.current?.value || 0;
     const sender = account.name;
-    const recipient = recipientRef.current?.value || "no-recipient";
     const randomHex = bytesToHex(randomBytes(21)); // + security
 
     const tx = { sender, amount, recipient, randomHex };
@@ -38,27 +38,30 @@ export default function TxForm() {
     console.log(validateTnxData, tx);
 
     // validate tx in the server, will also have a txDone value whit tx info
-    // const { data } = await axios.post("api/validateTx", validateTnxData);
-    // if (data.validTx) console.log("Poggers :D");
-    // else console.log("bu bu desu wa!");
+    const { data } = await axios.post("api/validateTx", validateTnxData);
+    if (data.validTx) console.log("Poggers :D", data);
+    else console.log("bu bu desu wa!", data);
+  };
+
+  const updateRecipient = (e: ChangeEvent<HTMLSelectElement>) => {
+    // since the select only has valid options I can rest assure this wont fail
+    setRecipient(e.target.value as Username);
   };
 
   return (
-    <form onSubmit={sendTx}>
-      <h1>
-        sending {amountRef.current?.value || 0} from {account.name} to
-        {recipientRef.current?.value || "nobody"}
-      </h1>
-      <SelectAccount />
+    <main className="main">
+      <form onSubmit={sendTx} className="tx-form">
+        <SelectAccount />
 
-      <label>
-        Amount
-        <input type="number" />
-      </label>
+        <label>
+          Amount
+          <input type="number" ref={amountRef} />
+        </label>
 
-      <SelectRecipient {...{ recipientRef, accNames }} />
+        <SelectRecipient {...{ updateRecipient, accNames }} />
 
-      <button>Send TX</button>
-    </form>
+        <button>Send TX</button>
+      </form>
+    </main>
   );
 }

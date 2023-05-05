@@ -1,25 +1,24 @@
 import { Username } from "@/utils/accounts";
-import { RefObject } from "react";
+import { ChangeEvent } from "react";
 
 type Props = {
-  recipientRef: RefObject<HTMLSelectElement>;
+  updateRecipient: (e: ChangeEvent<HTMLSelectElement>) => void;
   accNames: Username[];
 };
 
 export default function SelectRecipient(props: Props) {
-  const { recipientRef, accNames } = props;
+  const { accNames, updateRecipient } = props;
 
   return (
-    <label>
+    <label className="select-recipient">
       To
-      <select ref={recipientRef}>
+      <select onChange={updateRecipient}>
         {accNames.map((name) => (
           <option value={name} key={name}>
             {name}
           </option>
         ))}
       </select>
-      <input type="text" />
     </label>
   );
 }
