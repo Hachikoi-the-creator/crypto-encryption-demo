@@ -1,59 +1,62 @@
-import { bytesToHex } from "@noble/curves/abstract/utils";
+import { FormEvent, useContext, useRef } from "react";
 import axios from "axios";
-import { randomBytes } from "crypto";
+import { bytesToHex } from "@noble/curves/abstract/utils";
 import { secp256k1 } from "ethereum-cryptography/secp256k1";
 import { utf8ToBytes } from "ethereum-cryptography/utils";
-import { useRef } from "react";
+import { randomBytes } from "crypto";
+import { AccountContext } from "@/pages";
+import { accountsArray } from "@/utils/accounts";
+import SelectRecipient from "./SelectRecipient";
+import SelectAccount from "./SelectAccount";
 
-type Props = {
-  privateKey: string;
-  publicKey: string;
-  username: string;
-};
-
-export default function TxForm({ username, privateKey, publicKey }: Props) {
-  const senderRef = useRef<HTMLInputElement>(null);
+export default function TxForm() {
+  const { account } = useContext(AccountContext);
   const amountRef = useRef<HTMLInputElement>(null);
-  const recipiendRef = useRef<HTMLInputElement>(null);
+  const recipientRef = useRef<HTMLSelectElement>(null);
+  // arr of names without the one that's the current sender
+  const accNames = accountsArray
+    .map((e) => e.name)
+    .filter((e) => e !== account.name);
 
-  const sendTx = async () => {
-    const amount = amountRef.current?.value;
+  const sendTx = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const amount = amountRef.current?.value || 0;
+    const sender = account.name;
+    const recipient = recipientRef.current?.value || "no-recipient";
+    const randomHex = bytesToHex(randomBytes(21)); // + security
 
-    const tx = {
-      sender: senderRef.current?.value || "no-sender",
-      amount: amount ? +amount : 0,
-      recipient: recipiendRef.current?.value || "no-recipient",
-      randomNum: bytesToHex(randomBytes(21)), // + security
-    };
+    const tx = { sender, amount, recipient, randomHex };
 
     const txHash = utf8ToBytes(JSON.stringify(tx));
-    const signedTxHash = secp256k1.sign(txHash, privateKey);
+    const signedTxHash = secp256k1.sign(txHash, account.privateKey);
 
     const validateTnxData = {
       signedHashHex: signedTxHash.toCompactHex(),
       txHash: bytesToHex(txHash),
-      publicKey,
+      publicKey: account.publicKey,
     };
+    console.log(validateTnxData, tx);
 
     // validate tx in the server, will also have a txDone value whit tx info
-    const { data } = await axios.post("api/validateTx", validateTnxData);
-    if (data.validTx) console.log("Poggers :D");
-    else console.log("bu bu desu wa!");
+    // const { data } = await axios.post("api/validateTx", validateTnxData);
+    // if (data.validTx) console.log("Poggers :D");
+    // else console.log("bu bu desu wa!");
   };
 
   return (
     <form onSubmit={sendTx}>
-      <label>
-        <input type="text" />
-      </label>
+      <h1>
+        sending {amountRef.current?.value || 0} from {account.name} to
+        {recipientRef.current?.value || "nobody"}
+      </h1>
+      <SelectAccount />
 
       <label>
+        Amount
         <input type="number" />
       </label>
 
-      <label>
-        <input type="text" />
-      </label>
+      <SelectRecipient {...{ recipientRef, accNames }} />
 
       <button>Send TX</button>
     </form>

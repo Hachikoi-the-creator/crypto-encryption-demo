@@ -5,11 +5,9 @@ import { ChangeEvent, useContext } from "react";
 export default function SelectAccount() {
   const { account, setAccount } = useContext(AccountContext);
 
+  // don't need any kind of confirmation since can only be within valid range :D
   const selectHandler = (e: ChangeEvent<HTMLSelectElement>) => {
     const index = +e.target.value || 0;
-    if (index < 0 || index >= accountsArray.length)
-      return console.error("invalid option somehow...");
-
     setAccount(accountsArray[index]);
   };
 

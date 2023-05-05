@@ -83,7 +83,7 @@ export const runCompleteExample = (sender: Username = "alice") => {
   // dataToSend.tx = tx;
   const txHash = keccak256(utf8ToBytes(JSON.stringify(tx)));
   // dataToSend.txHash = bytesToHex(txHash);
-  const signedTxHash = secp256k1.sign(txHash, "ACCOUNTS[sender].private");
+  const signedTxHash = secp256k1.sign(txHash, ACCOUNTS[sender].private);
   // dataToSend.signedHashHex = signedTxHash.toCompactHex()
 
   const publicKey = signedTxHash.recoverPublicKey(txHash).toHex(); // derived public key from tx & signed tx

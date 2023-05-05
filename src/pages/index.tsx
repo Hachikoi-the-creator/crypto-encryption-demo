@@ -1,4 +1,4 @@
-import Atrocity from "@/comps/Atrocity";
+import TxForm from "@/components/TxForm";
 import { Account, accountsArray } from "@/utils/accounts";
 import { Dispatch, SetStateAction, createContext, useState } from "react";
 
@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <AccountContext.Provider value={{ account, setAccount }}>
-      <Atrocity />
+      <TxForm />
     </AccountContext.Provider>
   );
 }
