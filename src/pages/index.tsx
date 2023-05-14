@@ -3,20 +3,27 @@ import { Account, accountsArray } from "@/utils/accounts";
 import { Dispatch, SetStateAction, createContext, useState } from "react";
 
 type AccountContextT = {
-  account: Account;
-  setAccount: Dispatch<SetStateAction<Account>>;
+  sender: Account;
+  recipient: Account;
+  setSender: Dispatch<SetStateAction<Account>>;
+  setRecipient: Dispatch<SetStateAction<Account>>;
 };
 
 export const AccountContext = createContext<AccountContextT>({
-  account: accountsArray[0],
-  setAccount: () => {},
+  sender: accountsArray[0],
+  recipient: accountsArray[1],
+  setSender: () => {},
+  setRecipient: () => {},
 });
 
 export default function App() {
-  const [account, setAccount] = useState(accountsArray[0]);
+  const [sender, setSender] = useState(accountsArray[0]);
+  const [recipient, setRecipient] = useState(accountsArray[1]);
 
   return (
-    <AccountContext.Provider value={{ account, setAccount }}>
+    <AccountContext.Provider
+      value={{ sender, recipient, setSender, setRecipient }}
+    >
       <TxForm />
     </AccountContext.Provider>
   );

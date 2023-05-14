@@ -3,12 +3,12 @@ import { accountsArray } from "@/utils/accounts";
 import { ChangeEvent, useContext } from "react";
 
 export default function SelectSender() {
-  const { account, setAccount } = useContext(AccountContext);
+  const { sender, setSender } = useContext(AccountContext);
 
   // don't need any kind of confirmation since can only be within valid range :D
   const selectHandler = (e: ChangeEvent<HTMLSelectElement>) => {
     const index = +e.target.value || 0;
-    setAccount(accountsArray[index]);
+    setSender(accountsArray[index]);
   };
 
   return (
@@ -24,8 +24,8 @@ export default function SelectSender() {
         </select>
       </label>
       <p>
-        {`0x${account.publicKey.slice(0, 5)} ... ${account.publicKey.slice(
-          account.publicKey.length - 7
+        {`0x${sender.publicKey.slice(0, 5)} ... ${sender.publicKey.slice(
+          sender.publicKey.length - 7
         )}`}
       </p>
     </div>

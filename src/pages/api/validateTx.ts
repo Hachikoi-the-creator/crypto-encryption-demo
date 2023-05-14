@@ -2,6 +2,12 @@ import { Username, accountsArray } from "@/utils/accounts";
 import { secp256k1 } from "ethereum-cryptography/secp256k1";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+type Tx = {
+  sender: string;
+  amount: string;
+  recipient: string;
+};
+
 type Balance = { [key in Username]: number };
 
 const balances: Balance = {
@@ -40,11 +46,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         msg: `${tx.sender} has sent ${tx.amount} to ${tx.recipient} !`,
       });
 
-    // case "GET":
-    //   const { adx } = req.query;
-    //   if (!balances[adx as string]) balances[adx as string] = 1;
-    //   const accMoney = balances[adx as string];
-    //   return res.send({ adx: accMoney });
+    case "GET":
+      const { adx } = req.query;
+      if (typeof adx !== "string") return res.send({ err: "invalid adx" });
+      // don't really care if it exis or not....
+      // todo: change whole logic after lol
+      return res.send({ adx: balances[adx as Username] });
+
     default:
   }
 }
@@ -75,11 +83,6 @@ function validateTxHash(
   return isValid;
 }
 
-type Tx = {
-  sender: string;
-  amount: string;
-  recipient: string;
-};
 // Check if the given publick key matches the sender account name
 function verifyTransaction(publicKey: any, tx: undefined | Tx): boolean {
   if (!(publicKey || tx)) return false;
@@ -91,15 +94,17 @@ function verifyTransaction(publicKey: any, tx: undefined | Tx): boolean {
 
 // once everyting has been confirmed make the TX, but first check if sender has enough money & if recipient exist
 function executeTx(tx: Tx): boolean {
+  const invalidAmount = isNaN(+tx.amount);
+  const enoughSenderMoney = balances[tx.sender as Username] >= +tx.amount;
+  if (invalidAmount || !enoughSenderMoney) return false; //NaN or not enough balance
+
   const senderAcc = accountsArray.find((acc) => acc.name === tx.sender);
+  if (!senderAcc) return false; // non existent sender
+
   const recipientAcc = accountsArray.find((acc) => acc.name === tx.recipient);
-  // check if it has enough balance
-  // if (senderAcc?.name)
-}
-// -/+ amount from both acccounts & makes sure the sender has enough founds & hanlde the case where recipient doesn't yet exist
-function handlePost(signedHashHex: any, txHash: any, publicKey: any) {
-  console.log(signedHashHex, txHash, publicKey);
-  const validData = [signedHashHex, txHash, publicKey].every(
-    (e) => e.length > 13
-  );
+  if (!recipientAcc) return false; // non existent recipient
+
+  balances[senderAcc.name] -= +tx.amount;
+  balances[recipientAcc.name] += +tx.amount;
+  return true;
 }

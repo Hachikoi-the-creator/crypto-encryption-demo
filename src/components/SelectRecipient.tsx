@@ -1,13 +1,23 @@
-import { Username } from "@/utils/accounts";
-import { ChangeEvent } from "react";
+import { AccountContext } from "@/pages";
+import { Username, accountsArray } from "@/utils/accounts";
+import { ChangeEvent, useContext } from "react";
 
-type Props = {
-  updateRecipient: (e: ChangeEvent<HTMLSelectElement>) => void;
-  accNames: Username[];
-};
+export default function SelectRecipient() {
+  const { sender, setRecipient } = useContext(AccountContext);
 
-export default function SelectRecipient(props: Props) {
-  const { accNames, updateRecipient } = props;
+  // arr of names without the one that's the current sender
+  const accNames = accountsArray
+    .map((acc) => acc.name)
+    .filter((name) => name !== sender.name);
+
+  const updateRecipient = (e: ChangeEvent<HTMLSelectElement>) => {
+    const user = accountsArray.find(
+      (acc) => acc.name === (e.target.value as Username)
+    );
+
+    if (user) return setRecipient(user);
+    console.error("couldn't find the recipient somehow");
+  };
 
   return (
     <label className="select-recipient">
