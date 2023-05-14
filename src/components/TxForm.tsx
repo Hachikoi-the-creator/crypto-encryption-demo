@@ -34,8 +34,11 @@ export default function TxForm() {
       signedHashHex: signedTxHash.toCompactHex(),
       txHash: bytesToHex(txHash),
       publicKey: account.publicKey,
+      sender: tx.sender,
+      amount: tx.amount,
+      recipient: tx.recipient,
     };
-    console.log(validateTnxData, tx);
+    console.log(validateTnxData);
 
     // validate tx in the server, will also have a txDone value whit tx info
     const { data } = await axios.post("api/validateTx", validateTnxData);
