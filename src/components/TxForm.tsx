@@ -7,6 +7,7 @@ import { randomBytes } from "crypto";
 import { AccountContext } from "@/pages";
 import SelectRecipient from "./SelectRecipient";
 import SelectAccount from "./SelectSender";
+import { axiosBase } from "@/utils/axiosBase";
 
 export default function TxForm() {
   const { sender, recipient } = useContext(AccountContext);
@@ -22,21 +23,16 @@ export default function TxForm() {
 
     const txHash = utf8ToBytes(JSON.stringify(tx));
     const signedTxHash = secp256k1.sign(txHash, sender.privateKey);
-    const ver = secp256k1.verify(signedTxHash, txHash, sender.publicKey);
-    console.log("ver", ver);
-
-    const validateTnxData = {
-      signedHashHex: signedTxHash.toCompactHex(),
-      txHash: bytesToHex(txHash),
-      publicKey: sender.publicKey,
-      sender: tx.sender,
-      amount: tx.amount,
-      recipient: tx.recipient,
-    };
-    console.log(validateTnxData);
+    const isVerified = secp256k1.verify(signedTxHash, txHash, sender.publicKey);
+    console.log("isVerified", isVerified, tx);
+    if (!isVerified) return console.error("unable to validate TX");
 
     // validate tx in the server, will also have a txDone value whit tx info
-    const { data } = await axios.post("api/validateTx", validateTnxData);
+    const { data } = await axiosBase.post("/makeTx", {
+      sender: sender.name,
+      amount,
+      recipient: recipient.name,
+    });
     console.log("owo", data);
   };
 

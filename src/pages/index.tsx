@@ -1,5 +1,5 @@
 import TxForm from "@/components/TxForm";
-import { Account, accountsArray } from "@/utils/accounts";
+import { Account, accountsArray } from "@/data/accounts";
 import { Dispatch, SetStateAction, createContext, useState } from "react";
 
 type AccountContextT = {

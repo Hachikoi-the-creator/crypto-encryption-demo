@@ -1,5 +1,5 @@
+import { accountsArray } from "@/data/accounts";
 import { AccountContext } from "@/pages";
-import { accountsArray } from "@/utils/accounts";
 import { ChangeEvent, useContext } from "react";
 
 export default function SelectSender() {

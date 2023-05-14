@@ -1,5 +1,5 @@
+import { accountsArray } from "@/data/accounts";
 import { AccountContext } from "@/pages";
-import { Username, accountsArray } from "@/utils/accounts";
 import { ChangeEvent, useContext } from "react";
 
 export default function SelectRecipient() {
@@ -11,9 +11,7 @@ export default function SelectRecipient() {
     .filter((name) => name !== sender.name);
 
   const updateRecipient = (e: ChangeEvent<HTMLSelectElement>) => {
-    const user = accountsArray.find(
-      (acc) => acc.name === (e.target.value as Username)
-    );
+    const user = accountsArray.find((acc) => acc.name === e.target.value);
 
     if (user) return setRecipient(user);
     console.error("couldn't find the recipient somehow");
