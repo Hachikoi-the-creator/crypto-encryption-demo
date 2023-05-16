@@ -1,14 +1,10 @@
 import { accountsArray } from "@/data/accounts";
 import { AccountContext } from "@/pages";
-import { ChangeEvent, useContext } from "react";
+import { ChangeEvent, useContext, useEffect } from "react";
 
 export default function SelectRecipient() {
-  const { sender, setRecipient } = useContext(AccountContext);
-
-  // arr of names without the one that's the current sender
-  const accNames = accountsArray
-    .map((acc) => acc.name)
-    .filter((name) => name !== sender.name);
+  const { sender, recipient, setRecipient, availableRecipients } =
+    useContext(AccountContext);
 
   const updateRecipient = (e: ChangeEvent<HTMLSelectElement>) => {
     const user = accountsArray.find((acc) => acc.name === e.target.value);
@@ -18,15 +14,24 @@ export default function SelectRecipient() {
   };
 
   return (
-    <label className="select-recipient">
-      To
-      <select onChange={updateRecipient}>
-        {accNames.map((name) => (
-          <option value={name} key={name}>
-            {name}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className="select-sender">
+      <label className="select-field">
+        To
+        <select name="recipient" onChange={updateRecipient}>
+          {availableRecipients.map((e, i) => (
+            <option value={i} key={i}>
+              {e.name[0].toUpperCase() + e.name.slice(1)}'s account
+              {e.balance}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p>
+        {`0x${recipient.publicKey.slice(0, 5)} ... ${recipient.publicKey.slice(
+          recipient.publicKey.length - 7
+        )}`}
+      </p>
+      <p>Balace {recipient.balance || 0}</p>
+    </div>
   );
 }

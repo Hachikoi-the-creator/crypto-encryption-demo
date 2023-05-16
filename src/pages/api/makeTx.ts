@@ -58,8 +58,8 @@ function getUpdatedValues(tx: Tx) {
   const recipient = accountsArray.find((acc) => acc.name === tx.recipient);
 
   return {
-    sender: { sender: sender?.name, balance: sender?.balance },
-    recipient: { sender: recipient?.name, balance: recipient?.balance },
+    sender: { name: sender?.name, balance: sender?.balance },
+    recipient: { name: recipient?.name, balance: recipient?.balance },
   };
 }
 

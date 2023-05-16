@@ -1,16 +1,20 @@
-import axios from "axios";
+import { axiosBase } from "@/utils/axiosBase";
 import { FormEvent, useContext, useRef } from "react";
 import { bytesToHex } from "@noble/curves/abstract/utils";
 import { secp256k1 } from "ethereum-cryptography/secp256k1";
 import { utf8ToBytes } from "ethereum-cryptography/utils";
 import { randomBytes } from "crypto";
+import Image from "next/image";
+
 import { AccountContext } from "@/pages";
 import SelectRecipient from "./SelectRecipient";
 import SelectAccount from "./SelectSender";
-import { axiosBase } from "@/utils/axiosBase";
+import sendArrow from "@/assets/arrow.png";
+import { Account } from "@/data/accounts";
 
 export default function TxForm() {
-  const { sender, recipient } = useContext(AccountContext);
+  const { sender, recipient, setRecipient, setSender } =
+    useContext(AccountContext);
   const amountRef = useRef<HTMLInputElement>(null);
 
   // * ---- tx sender ----
@@ -33,21 +37,37 @@ export default function TxForm() {
       amount,
       recipient: recipient.name,
     });
-    console.log("owo", data);
+
+    // update app balances
+    const updatedRecipient: Account = {
+      ...recipient,
+      balance: data.updatedValues.recipient.balance,
+      name: data.updatedValues.recipient.name,
+    };
+    const updatedSender: Account = {
+      ...sender,
+      balance: data.updatedValues.sender.balance,
+      name: data.updatedValues.sender.name,
+    };
+
+    setSender(updatedSender);
+    setRecipient(updatedRecipient);
   };
 
   return (
     <main className="main">
-      <form onSubmit={sendTx} className="tx-form">
-        <SelectAccount />
-
-        <label>
-          Amount
-          <input type="number" ref={amountRef} />
-        </label>
-
-        <SelectRecipient />
-        <button>Send TX</button>
+      <form onSubmit={sendTx} className="form">
+        <div className="form-container">
+          <SelectAccount {...{ amountRef }} />
+          <Image
+            src={sendArrow}
+            width={100}
+            height={100}
+            alt="send money arrow"
+          />
+          <SelectRecipient />
+        </div>
+        <button className="send-btn button">Send TX</button>
       </form>
     </main>
   );
