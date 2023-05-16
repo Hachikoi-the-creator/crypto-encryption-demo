@@ -43,6 +43,8 @@ export default function TxForm() {
       setSender(updatedSender);
       setRecipient(updatedRecipient);
     } catch (error) {
+      window.alert("cannot do");
+      console.error("canot send tx", error);
     } finally {
       setLoading(false);
     }

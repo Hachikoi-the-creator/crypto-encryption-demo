@@ -10,14 +10,13 @@ type Tx = {
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     const tx = req.body;
-    console.log("tx", tx);
 
     const validTtx = validateTxValues(tx);
     if (!validTtx)
       return res.send({ error: "TX has invalid format or missing values" });
 
     const successfulTx = executeTx(tx);
-    if (!successfulTx) return res.send({ error: "Uknown error processing tx" });
+    if (!successfulTx) return res.status(400).send("cannot execute tx");
     const updatedValues = getUpdatedValues(tx);
 
     res.send({ status: "success", updatedValues });
@@ -36,13 +35,18 @@ function validateTxValues(tx: any) {
 function executeTx(tx: Tx) {
   if (isNaN(+tx.amount)) return false;
 
+  // check if users exist
   const senderIdx = accountsArray.findIndex((acc) => acc.name === tx.sender);
   const recipientIdx = accountsArray.findIndex(
     (acc) => acc.name === tx.recipient
   );
   if (senderIdx === -1 || recipientIdx === -1) return false;
+
   const sender = accountsArray[senderIdx];
   const recipient = accountsArray[recipientIdx];
+
+  // check if enough balance
+  if (sender.balance < +tx.amount) return false;
 
   //update sender & recipient data
   sender.balance -= +tx.amount;
