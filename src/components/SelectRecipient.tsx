@@ -21,7 +21,6 @@ export default function SelectRecipient() {
           {availableRecipients.map((e, i) => (
             <option value={i} key={i}>
               {e.name[0].toUpperCase() + e.name.slice(1)}'s account
-              {e.balance}
             </option>
           ))}
         </select>

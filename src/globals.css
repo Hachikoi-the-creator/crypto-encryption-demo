@@ -53,6 +53,15 @@ a {
   padding: 1rem;
 }
 
+@media (max-width: 700px) {
+  .form-container {
+    flex-direction: column;
+  }
+  .img {
+    transform: rotate(90deg);
+  }
+}
+
 /* select gpt */
 /* Custom select styles */
 .select-field {
