@@ -1,6 +1,7 @@
 import "@/globals.css";
 import type { AppProps } from "next/app";
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
+  // @ts-ignore
   return <Component {...pageProps} />;
 }
